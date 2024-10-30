@@ -88,7 +88,7 @@ DATABASES = {
         'NAME': 'ecommerce',
         'USER': 'userdb',
         'PASSWORD': 'abcd1234',
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'HOST': os.environ.get('DB_HOST', '').split(':')[0],
         'PORT': '5432',
     }, 
     'sqlite': {
