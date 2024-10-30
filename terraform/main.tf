@@ -121,6 +121,13 @@ resource "aws_security_group" "rds" {
     protocol        = "tcp"
     security_groups = [aws_security_group.ec2.id]
   }
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["44.221.216.0/32"] 
+  }
 }
 
 # Security group for EC2
