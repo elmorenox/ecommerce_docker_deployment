@@ -1,5 +1,8 @@
 FROM python:3.9.20-bullseye
 
+ARG DB_HOST
+
+ENV DB_HOST=$DB_HOST
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
@@ -18,10 +21,6 @@ RUN python manage.py makemigrations account && \
     python manage.py makemigrations payments && \
     python manage.py makemigrations product && \
     python manage.py migrate
-
-# Dump and load data
-RUN python manage.py dumpdata --database=default --natural-foreign --natural-primary -e contenttypes -e auth.Permission --indent 4 > datadump.json && \
-    python manage.py loaddata datadump.json
 
 EXPOSE 8000
 
