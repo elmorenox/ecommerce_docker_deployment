@@ -6,13 +6,6 @@ pipeline {
     environment {
         DOCKER_CREDS = credentials('docker-hub-credentials')
     }
-    
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/elmorenox/dockerized-ecommerce-on-ec2'
-            }
-        }
 
         stage('Infrastructure') {
             steps {
