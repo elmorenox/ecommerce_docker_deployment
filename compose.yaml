@@ -3,12 +3,6 @@ version: '3.8'
 services:
   backend:
     image: morenodoesinfra/ecommerce-be:latest
-    environment:
-      - DB_NAME=your_db_name
-      - DB_USER=your_username
-      - DB_PASSWORD=your_password
-      - DB_HOST=your-rds-endpoint.amazonaws.com
-      - DB_PORT=5432
     ports:
       - "8000:8000"
     networks:
