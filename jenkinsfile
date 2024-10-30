@@ -1,0 +1,97 @@
+pipeline {
+    agent {
+        label 'build-node'
+    }
+    
+    environment {
+        DOCKER_CREDS = credentials('docker-hub-credentials')
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                // Replace with your GitHub repo URL
+                git 'https://github.com/elmorenox/dockerized-ecommerce-on-ec2'
+            }
+        }
+
+        stage('Infrastructure') {
+            steps {
+                dir('terraform') {
+                    sh '''
+                        terraform init
+                        terraform apply -auto-approve
+                    '''
+                    
+                    script {
+                        env.EC2_IP = sh(
+                            script: 'terraform output -raw ec2_private_ip',
+                            returnStdout: true
+                        ).trim()
+                        
+                        env.RDS_ENDPOINT = sh(
+                            script: 'terraform output -raw rds_endpoint',
+                            returnStdout: true
+                        ).trim()
+                    }
+                }
+            }
+        }
+        
+        stage('Build & Push Images') {
+            steps {
+                sh 'echo $DOCKER_CREDS_PSW | docker login -u $DOCKER_CREDS_USR --password-stdin'
+                
+                // Build and push backend
+                sh """
+                    docker build \
+                        --build-arg DB_NAME=ecommerce \
+                        --build-arg DB_USER=djangouser \
+                        --build-arg DB_PASSWORD=djangopass \
+                        --build-arg DB_HOST=$RDS_ENDPOINT \
+                        -t morenodoesinfra/ecommerce-be:${BUILD_NUMBER} \
+                        -f Dockerfile.backend .
+                    
+                    docker push morenodoesinfra/ecommerce-be:${BUILD_NUMBER}
+                """
+                
+                // Build and push frontend
+                sh """
+                    docker build \
+                        -t morenodoesinfra/ecommerce-fe:${BUILD_NUMBER} \
+                        -f Dockerfile.frontend .
+                        
+                    docker push morenodoesinfra/ecommerce-fe:${BUILD_NUMBER}
+                """
+            }
+        }
+        
+        stage('Deploy to EC2') {
+            steps {
+                script {
+                    sh """
+                        sed -i 's|morenodoesinfra/ecommerce-be:latest|morenodoesinfra/ecommerce-be:${BUILD_NUMBER}|' docker-compose.yml
+                        sed -i 's|morenodoesinfra/ecommerce-fe:latest|morenodoesinfra/ecommerce-fe:${BUILD_NUMBER}|' docker-compose.yml
+                    """
+                    
+                    sshagent(['ec2-ssh-key']) {
+                        sh """
+                            scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@${EC2_IP}:~/
+                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_IP} '
+                                docker login -u $DOCKER_CREDS_USR -p $DOCKER_CREDS_PSW
+                                docker-compose pull
+                                docker-compose up -d
+                            '
+                        """
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            sh 'docker logout'
+        }
+    }
+}

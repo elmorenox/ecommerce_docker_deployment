@@ -1,0 +1,28 @@
+FROM python:3.9.20-bullseye
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Only copy backend directory contents
+COPY backend/ .
+
+# Install Python dependencies
+RUN pip install --upgrade pip && \
+    pip install django-environ && \
+    pip install -r requirements.txt
+
+# Run Django migrations
+RUN python manage.py makemigrations account && \
+    python manage.py makemigrations payments && \
+    python manage.py makemigrations product && \
+    python manage.py migrate
+
+# Dump and load data
+RUN python manage.py dumpdata --database=default --natural-foreign --natural-primary -e contenttypes -e auth.Permission --indent 4 > datadump.json && \
+    python manage.py loaddata datadump.json
+
+EXPOSE 8000
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
