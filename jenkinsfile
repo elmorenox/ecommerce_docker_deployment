@@ -45,9 +45,6 @@ pipeline {
                 // Build and push backend
                 sh """
                     docker build \
-                        --build-arg DB_NAME=ecommerce \
-                        --build-arg DB_USER=djangouser \
-                        --build-arg DB_PASSWORD=djangopass \
                         --build-arg DB_HOST=$RDS_ENDPOINT \
                         -t morenodoesinfra/ecommerce-be:${BUILD_NUMBER} \
                         -f Dockerfile.backend .
