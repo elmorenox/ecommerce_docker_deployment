@@ -30,28 +30,27 @@ pipeline {
                 }
             }
         }
-        
         stage('Build & Push Images') {
             steps {
-                sh 'echo $DOCKER_CREDS_PSW | docker login -u $DOCKER_CREDS_USR --password-stdin'
+                sh 'echo $DOCKER_CREDS_PSW | sudo docker login -u $DOCKER_CREDS_USR --password-stdin'
                 
                 // Build and push backend
                 sh """
-                    docker build \
+                    sudo docker build \
                         --build-arg DB_HOST=$RDS_ENDPOINT \
                         -t morenodoesinfra/ecommerce-be:latest \
                         -f Dockerfile.backend .
                     
-                    docker push morenodoesinfra/ecommerce-be:latest
+                    sudo docker push morenodoesinfra/ecommerce-be:latest
                 """
                 
                 // Build and push frontend
                 sh """
-                    docker build \
+                   sudo docker build \
                         -t morenodoesinfra/ecommerce-fe:latest \
                         -f Dockerfile.frontend .
                         
-                    docker push morenodoesinfra/ecommerce-fe:latest
+                    sudo docker push morenodoesinfra/ecommerce-fe:latest
                 """
             }
         }
@@ -62,7 +61,7 @@ pipeline {
                     sh """
                         scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@${EC2_IP}:~/
                         ssh -o StrictHostKeyChecking=no ubuntu@${EC2_IP} '
-                            docker login -u $DOCKER_CREDS_USR -p $DOCKER_CREDS_PSW
+                            sudo docker login -u $DOCKER_CREDS_USR -p $DOCKER_CREDS_PSW
                             docker-compose pull
                             docker-compose up -d
                         '
@@ -74,7 +73,7 @@ pipeline {
     
     post {
         always {
-            sh 'docker logout'
+            sh 'sudo docker logout'
         }
     }
 }
