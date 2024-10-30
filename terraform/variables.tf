@@ -1,7 +1,7 @@
 variable "db_name" {
   description = "Database name"
   type        = string
-  default = "e-commerce"
+  default = "ecommerce"
 }
 
 variable "db_username" {
@@ -15,4 +15,10 @@ variable "db_password" {
   type        = string
   sensitive   = true
   default = "password"
+}
+
+variable "key_name" {
+  description = "Name of the EC2 key pair"
+  type        = string
+  default = "LuisMorenoWorkloads"
 }

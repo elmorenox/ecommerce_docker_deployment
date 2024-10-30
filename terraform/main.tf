@@ -174,7 +174,7 @@ resource "aws_db_instance" "main" {
   allocated_storage    = 20
   storage_type         = "gp2"
   engine              = "postgres"
-  engine_version      = "13.7"
+  engine_version      = "14.13"
   instance_class      = "db.t3.micro"
   db_name             = var.db_name
   username            = var.db_username
@@ -191,7 +191,7 @@ resource "aws_db_instance" "main" {
 
 # EC2 Instance
 resource "aws_instance" "app" {
-  ami           = "ami-0c7217cdde317cfec"  # Ubuntu 22.04 LTS in us-east-1
+  ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.private[0].id
 
