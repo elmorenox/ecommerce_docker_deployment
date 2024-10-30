@@ -6,7 +6,8 @@ pipeline {
     environment {
         DOCKER_CREDS = credentials('docker-hub-credentials')
     }
-
+    
+    stages {
         stage('Infrastructure') {
             steps {
                 dir('terraform') {
