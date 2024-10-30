@@ -88,9 +88,13 @@ DATABASES = {
         'NAME': 'e-commerce',
         'USER': 'user',
         'PASSWORD': 'password',
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'HOST': 'your-rds-endpoint.amazonaws.com',
         'PORT': '5432',
     }, 
+    'sqlite': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
 

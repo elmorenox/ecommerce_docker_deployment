@@ -22,6 +22,14 @@ RUN python manage.py makemigrations account && \
     python manage.py makemigrations product && \
     python manage.py migrate
 
+
+# Dump data, load it, then remove sqlite file
+RUN (python manage.py dumpdata --database=sqlite \
+    --natural-foreign --natural-primary \
+    -e contenttypes -e auth.Permission --indent 4 > datadump.json && \
+    python manage.py loaddata datadump.json) || echo "Data migration failed but continuing build..." && \
+    rm -f db.sqlite3
+
 EXPOSE 8000
 
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
