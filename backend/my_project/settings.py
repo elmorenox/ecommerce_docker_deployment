@@ -88,7 +88,7 @@ DATABASES = {
         'NAME': 'e-commerce',
         'USER': 'user',
         'PASSWORD': 'password',
-        'HOST': 'your-rds-endpoint.amazonaws.com',
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
         'PORT': '5432',
     }, 
     'sqlite': {

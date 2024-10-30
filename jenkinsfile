@@ -10,7 +10,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Replace with your GitHub repo URL
                 git 'https://github.com/elmorenox/dockerized-ecommerce-on-ec2'
             }
         }
