@@ -11,15 +11,11 @@ pipeline {
         stage('Cleanup') {
             steps {
                 sh '''
-                    # Clean Terraform plugin cache
-                    rm -rf .terraform
-                    # Remove temporary and backup files
-                    find . -name "*.tfstate.backup" -type f -delete
-                    find . -name ".terraform.lock.hcl" -type f -delete
-                    # Clean Docker system
+                    # Only clean Docker system
                     sudo docker system prune -f
-                    # Clean Git objects and temp files
-                    git clean -ffdx
+                    
+                    # Safer git clean that preserves terraform state
+                    git clean -ffdx -e "*.tfstate*" -e ".terraform/*"
                 '''
             }
         }
@@ -57,7 +53,6 @@ pipeline {
                             -var="dockerhub_username=${DOCKER_CREDS_USR}" \
                             -var="dockerhub_password=${DOCKER_CREDS_PSW}"
                     '''
-                    
                 }
             }
         }
@@ -68,7 +63,6 @@ pipeline {
             sh '''
                 sudo docker logout
                 sudo docker system prune -f
-                rm -rf .terraform
             '''
         }
     }
