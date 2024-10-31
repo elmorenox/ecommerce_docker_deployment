@@ -1,8 +1,8 @@
 #!/bin/bash
 echo "User data script started at $(date)" | sudo tee -a /var/log/user-data.log
 
-sudo apt-get update
-sudo apt-get install -y docker.io docker-compose
+sudo apt update
+sudo apt install -y docker.io docker-compose
 
 # Login to Docker Hub
 echo "${dockerhub_password}" | sudo docker login -u "${dockerhub_username}" --password-stdin
