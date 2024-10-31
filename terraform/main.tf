@@ -217,3 +217,109 @@ resource "aws_instance" "app" {
     Name = "ecommerce-app"
   }
 }
+
+# ALB Security Group
+resource "aws_security_group" "alb" {
+  name        = "ecommerce-alb-sg"
+  description = "Security group for ALB"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Allow public access
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# ALB
+resource "aws_lb" "frontend" {
+  name               = "ecommerce-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb.id]
+  subnets            = aws_subnet.public[*].id
+
+  enable_deletion_protection = false
+
+  tags = {
+    Name = "ecommerce-alb"
+  }
+}
+
+# ALB Listener
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.frontend.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "forward"
+
+    target_group_arn = aws_lb_target_group.frontend.arn
+  }
+}
+
+# ALB Target Group for Frontend
+resource "aws_lb_target_group" "frontend" {
+  name     = "ecommerce-frontend-tg"
+  port     = 3000 
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
+
+  health_check {
+    path                = "/"  # Adjust if needed (e.g., "/health" if you have a health endpoint)
+    interval            = 30
+    timeout             = 5
+    healthy_threshold  = 2
+    unhealthy_threshold = 2
+  }
+}
+
+# Register EC2 Instance with Target Group for Frontend
+resource "aws_lb_target_group_attachment" "app" {
+  target_group_arn = aws_lb_target_group.frontend.arn
+  target_id        = aws_instance.app.id
+  port             = 3000  # Ensure this matches your frontend port
+}
+
+# Security Group for Bastion Host
+resource "aws_security_group" "bastion" {
+  name        = "ecommerce-bastion-sg"
+  description = "Security group for Bastion Host"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0"]  # Replace with your public IP address
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Bastion Host EC2 Instance
+resource "aws_instance" "bastion" {
+  ami                    = "ami-0c7217cdde317cfec"  # Choose a suitable AMI for your region
+  instance_type         = "t2.micro"
+  subnet_id             = aws_subnet.public[0].id
+  vpc_security_group_ids = [aws_security_group.bastion.id]
+  key_name              = var.key_name  # Ensure you have access to this key
+
+  tags = {
+    Name = "ecommerce-bastion"
+  }
+}
