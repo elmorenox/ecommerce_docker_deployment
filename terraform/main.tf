@@ -212,7 +212,7 @@ resource "aws_instance" "app" {
     docker_user = var.dockerhub_username,
     docker_pass = var.dockerhub_password,
     docker_compose = templatefile("${path.module}/compose.yaml", {
-      db_host = aws_db_instance.main.endpoint
+      rds_endpoint = aws_db_instance.main.endpoint
     })
   }))
 
