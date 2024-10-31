@@ -208,10 +208,11 @@ resource "aws_instance" "app" {
   vpc_security_group_ids = [aws_security_group.ec2.id]
   key_name              = var.key_name
 
-  user_data_base64 = base64encode(templatefile("${path.module}/deploy.sh.tftpl", {
-    rds_endpoint        = aws_db_instance.main.endpoint,
-    dockerhub_username  = var.dockerhub_username,
-    dockerhub_password  = var.dockerhub_password
+  user_data_base64 = base64encode(templatefile("${path.module}/deploy.sh", {
+      rds_endpoint        = aws_db_instance.main.endpoint,
+      dockerhub_username  = var.dockerhub_username,
+      dockerhub_password  = var.dockerhub_password,
+      docker_compose_yml  = file("${path.module}/compose.yaml")
   }))
 
   tags = {
