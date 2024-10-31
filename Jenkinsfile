@@ -8,6 +8,22 @@ pipeline {
     }
     
     stages {
+        stage('Cleanup') {
+            steps {
+                sh '''
+                    # Clean Terraform plugin cache
+                    rm -rf .terraform
+                    # Remove temporary and backup files
+                    find . -name "*.tfstate.backup" -type f -delete
+                    find . -name ".terraform.lock.hcl" -type f -delete
+                    # Clean Docker system
+                    sudo docker system prune -f
+                    # Clean Git objects and temp files
+                    git clean -ffdx
+                '''
+            }
+        }
+
         stage('Build & Push Images') {
             steps {
                 sh 'echo $DOCKER_CREDS_PSW | sudo docker login -u $DOCKER_CREDS_USR --password-stdin'
@@ -49,7 +65,11 @@ pipeline {
     
     post {
         always {
-            sh 'sudo docker logout'
+            sh '''
+                sudo docker logout
+                sudo docker system prune -f
+                rm -rf .terraform
+            '''
         }
     }
 }
