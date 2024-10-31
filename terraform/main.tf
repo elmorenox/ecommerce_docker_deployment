@@ -197,7 +197,6 @@ resource "aws_db_instance" "main" {
 }
 
 # EC2 Instance
-# EC2 Instance
 resource "aws_instance" "app" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.micro"
@@ -208,17 +207,55 @@ resource "aws_instance" "app" {
   vpc_security_group_ids = [aws_security_group.ec2.id]
   key_name              = var.key_name
 
-  user_data_base64 = base64encode(templatefile("${path.module}/deploy.sh", {
-      rds_endpoint        = aws_db_instance.main.endpoint,
-      dockerhub_username  = var.dockerhub_username,
-      dockerhub_password  = var.dockerhub_password,
-      docker_compose_yml  = file("${path.module}/compose.yaml")
-  }))
+  user_data_base64 = base64encode(<<-EOF
+    #!/bin/bash
+    echo "User data script started at $(date)" | sudo tee -a /var/log/user-data.log
+
+    # Install Docker and Docker Compose
+    sudo apt update
+    sudo apt install -y docker.io docker-compose
+
+    # Login to Docker Hub
+    echo "${dockerhub_password}" | sudo docker login -u "${dockerhub_username}" --password-stdin
+
+    # Set up app directory
+    mkdir -p /app
+    cd /app
+
+    # Create docker-compose.yml file
+    cat <<- EOM > docker-compose.yml
+    version: '3.8'
+
+    services:
+      backend:
+        image: morenodoesinfra/ecommerce-be:latest
+        ports:
+          - "8000:8000"
+        command: >
+          sh -c "python manage.py migrate &&
+                python manage.py dumpdata --database=sqlite --natural-foreign --natural-primary -e contenttypes -e auth.Permission --indent 4 > datadump.json &&
+                python manage.py loaddata datadump.json &&
+                rm -f db.sqlite3 &&
+                python manage.py runserver 0.0.0.0:8000"
+
+      frontend:
+        image: morenodoesinfra/ecommerce-fe:latest
+        ports:
+          - "3000:3000"
+        depends_on:
+          - backend
+    EOM
+
+    # Start containers with RDS endpoint
+    DB_HOST=${rds_endpoint} sudo docker-compose up -d
+  EOF
+  )
 
   tags = {
     Name = "ecommerce-app"
   }
 }
+
 
 
 # ALB Security Group
