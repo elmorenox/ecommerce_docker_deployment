@@ -1,19 +1,16 @@
 #!/bin/bash
-echo "User data script started at $(date)" | sudo tee -a /var/log/user-data.log
+sudo apt-get update
+sudo apt-get install -y docker.io docker-compose
 
-# Update the package list and install Docker
-sudo apt update
-sudo apt install -y docker.io docker-compose
+# Docker login with passed credentials
+echo "${docker_pass}" | docker login -u "${docker_user}" --password-stdin
 
-# Login to Docker Hub
-echo "${dockerhub_password}" | sudo docker login -u "${dockerhub_username}" --password-stdin
-
-# Create the app directory
 mkdir -p /app
 cd /app
 
-# Write the docker-compose.yml content to a file
-echo "${docker_compose_yml}" | sudo tee docker-compose.yml
+cat > docker-compose.yml <<'EOL'
+${docker_compose}
+EOL
 
-# Start containers with RDS endpoint
-DB_HOST=${rds_endpoint} sudo docker-compose up -d
+docker-compose pull
+docker-compose up -d

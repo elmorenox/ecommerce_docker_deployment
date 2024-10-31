@@ -3,6 +3,8 @@ version: '3.8'
 services:
   backend:
     image: morenodoesinfra/ecommerce-be:latest
+    environment:
+      - DB_HOST=${db_host}
     ports:
       - "8000:8000"
     command: >
