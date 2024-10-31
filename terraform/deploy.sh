@@ -32,7 +32,7 @@ docker-compose pull
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Images pulled"
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting containers..."
-docker-compose up -d
+docker-compose up -d --force-recreate
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Containers started"
 
 # Final cleanup
