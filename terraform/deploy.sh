@@ -33,4 +33,4 @@ echo "Images pulled"
 
 echo "Starting containers..."
 docker-compose up -d
-echo "Containers started"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Containers started"
