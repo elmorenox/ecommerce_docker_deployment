@@ -202,15 +202,16 @@ resource "aws_instance" "app" {
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.private[0].id
 
+  depends_on = [aws_db_instance.main]
+
   vpc_security_group_ids = [aws_security_group.ec2.id]
   key_name              = var.key_name
 
-  user_data = <<-EOF
-              #!/bin/bash
-              sudo apt-get update
-              sudo apt-get install -y docker.io docker-compose
-              sudo usermod -aG docker ubuntu
-              EOF
+  user_data_base64 = base64encode(templatefile("${path.module}/deploy.sh", {
+    rds_endpoint        = aws_db_instance.main.endpoint,
+    dockerhub_username  = var.dockerhub_username,
+    dockerhub_password  = var.dockerhub_password
+  }))
 
   tags = {
     Name = "ecommerce-app"

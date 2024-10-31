@@ -1,17 +1,12 @@
 FROM python:3.9.20-bullseye
 
-ARG DB_HOST
-
-ENV DB_HOST=$DB_HOST
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Only copy backend directory contents
 COPY backend/ .
 
-# Install Python dependencies
 RUN pip install --upgrade pip && \
     pip install django-environ && \
     pip install -r requirements.txt
