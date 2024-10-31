@@ -256,8 +256,6 @@ resource "aws_instance" "app" {
   }
 }
 
-
-
 # ALB Security Group
 resource "aws_security_group" "alb" {
   name        = "ecommerce-alb-sg"
