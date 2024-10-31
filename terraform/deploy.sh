@@ -2,36 +2,42 @@
 
 # Add logging
 exec > >(tee /var/log/user-data-script.log) 2>&1
-echo "Starting deployment script..."
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting deployment script..."
 
-echo "Updating packages..."
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Updating packages..."
 sudo apt-get update
-echo "Package update complete"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Package update complete"
 
-echo "Installing Docker..."
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Installing Docker..."
 sudo apt-get install -y docker.io docker-compose
-echo "Docker installation complete"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Docker installation complete"
 
-echo "Attempting Docker login..."
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Attempting Docker login..."
 echo "${docker_pass}" | docker login -u "${docker_user}" --password-stdin
-echo "Docker login complete"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Docker login complete"
 
-echo "Creating app directory..."
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Creating app directory..."
 mkdir -p /app
 cd /app
-echo "Created and moved to /app"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Created and moved to /app"
 
-echo "Creating docker-compose.yml..."
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Creating docker-compose.yml..."
 cat > docker-compose.yml <<EOF
 ${docker_compose}
 EOF
-echo "docker-compose.yml created"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] docker-compose.yml created"
 
-echo "Pulling Docker images..."
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Pulling Docker images..."
 docker-compose pull
-echo "Images pulled"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Images pulled"
 
-echo "Starting containers..."
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting containers..."
 docker-compose up -d
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Containers started"
+
+# Final cleanup
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Running cleanup..."
+sudo docker system prune -f
+docker logout
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Deployment and cleanup complete"
 # FIN
