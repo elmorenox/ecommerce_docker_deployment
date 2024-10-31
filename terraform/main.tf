@@ -197,6 +197,7 @@ resource "aws_db_instance" "main" {
 }
 
 # EC2 Instance
+# EC2 Instance
 resource "aws_instance" "app" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t2.micro"
@@ -207,7 +208,7 @@ resource "aws_instance" "app" {
   vpc_security_group_ids = [aws_security_group.ec2.id]
   key_name              = var.key_name
 
-  user_data_base64 = base64encode(templatefile("${path.module}/deploy.sh", {
+  user_data_base64 = base64encode(templatefile("${path.module}/deploy.sh.tftpl", {
     rds_endpoint        = aws_db_instance.main.endpoint,
     dockerhub_username  = var.dockerhub_username,
     dockerhub_password  = var.dockerhub_password
@@ -217,6 +218,7 @@ resource "aws_instance" "app" {
     Name = "ecommerce-app"
   }
 }
+
 
 # ALB Security Group
 resource "aws_security_group" "alb" {
