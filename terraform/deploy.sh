@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "User data script started at $(date)" | sudo tee -a /var/log/user-data.log
+
 sudo apt-get update
 sudo apt-get install -y docker.io docker-compose
 
