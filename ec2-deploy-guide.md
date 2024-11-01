@@ -38,11 +38,14 @@ Security Groups:
 
 For detailed Terraform configuration, see the [main.tf](./terraform/main.tf) file.
 
+**Config**
+- [Replace the key](./terraform/variables.tf#L23) you have or you'll have to add tf code to create a new key and output it so you can use it in the bastion. 
+
 ## Jenkins pipeline:
 
 - The pipeline builds the [Dockerfile.backend](Dockerfile.backend) and [Dockerfile.frontend](Dockerfile.frontend). 
-- The VPC is created.
- - The EC2 for that hosts the containers has [user data](./terraform/deploy.sh) that runs the [compose.yaml](./terraform/compose.yaml)
+- The terraform step creates the VPC is created.
+- The [terraform block](./terraform/main.tf#L199-L222) that creates the EC2 for that hosts the containers has [user data](./terraform/deploy.sh) that runs the [compose.yaml](./terraform/compose.yaml)
  - **POSSIBLE BUG**
     - If the user data doesn't run for some reason you'll have to use the bastion server to ssh into the ecommerce-app ec2 and run the user data manually
       ```
