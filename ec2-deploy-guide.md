@@ -52,8 +52,8 @@ For detailed Terraform configuration, see the [main.tf](./terraform/main.tf) fil
          sudo bash /var/lib/cloud/instance/user-data.txt
       ``` 
 
-Create a Jenkins infrastructure with a manager and a node.
-
+**Create a Jenkins infrastructure with a manager and a node.
+**
 Node
    - name should be 'build-node' to correspond with name in Jenkinsfile
    - T3.medium, 20gb disk space
@@ -63,8 +63,8 @@ Node
       - docker-compose
       - terraform
 
-Jenkins Credentials use by the pipepiline
-   - Github token for repo. Save as password and username
+**Jenkins Credentials used by the pipepiline
+**   - Github token for repo. Save as password and username
    - Docker token for dockerbub account. Save as password and username. ID of credentials should be 'docker-hub-credentials' to correspond with name on Jenkinsfile
 
 ### Changes in Jenkinsfile
