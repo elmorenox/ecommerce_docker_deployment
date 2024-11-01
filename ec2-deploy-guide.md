@@ -43,8 +43,8 @@ For detailed Terraform configuration, see the [main.tf](./terraform/main.tf) fil
 
 ## Jenkins pipeline:
 
-- The pipeline builds the [Dockerfile.backend](Dockerfile.backend) and [Dockerfile.frontend](Dockerfile.frontend). 
-- The terraform step creates the VPC is created.
+- The pipeline has a docker step that builds the [Dockerfile.backend](Dockerfile.backend) and [Dockerfile.frontend](Dockerfile.frontend). 
+- The terraform step creates the VPC.
 - The [terraform block](./terraform/main.tf#L199-L222) that creates the EC2 for that hosts the containers has [user data](./terraform/deploy.sh) that runs the [compose.yaml](./terraform/compose.yaml)
  - **POSSIBLE BUG**
     - If the user data doesn't run for some reason you'll have to use the bastion server to ssh into the ecommerce-app ec2 and run the user data manually
