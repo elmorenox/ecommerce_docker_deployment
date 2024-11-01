@@ -278,7 +278,7 @@ resource "aws_lb_target_group" "frontend" {
   vpc_id   = aws_vpc.main.id
 
   health_check {
-    path                = "/"  # Adjust if needed (e.g., "/health" if you have a health endpoint)
+    path                = "/" 
     interval            = 30
     timeout             = 5
     healthy_threshold  = 2
@@ -290,7 +290,7 @@ resource "aws_lb_target_group" "frontend" {
 resource "aws_lb_target_group_attachment" "app" {
   target_group_arn = aws_lb_target_group.frontend.arn
   target_id        = aws_instance.app.id
-  port             = 3000  # Ensure this matches your frontend port
+  port             = 3000  
 }
 
 # Security Group for Bastion Host
@@ -303,7 +303,7 @@ resource "aws_security_group" "bastion" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Replace with your public IP address
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -316,7 +316,7 @@ resource "aws_security_group" "bastion" {
 
 # Bastion Host EC2 Instance
 resource "aws_instance" "bastion" {
-  ami                    = "ami-0c7217cdde317cfec"  # Choose a suitable AMI for your region
+  ami                    = "ami-0c7217cdde317cfec"
   instance_type         = "t2.micro"
   subnet_id             = aws_subnet.public[0].id
   vpc_security_group_ids = [aws_security_group.bastion.id]
