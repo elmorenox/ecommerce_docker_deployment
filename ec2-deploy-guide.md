@@ -1,4 +1,6 @@
-# Django Ecommerce on EC2
+#  Dockerized Django Ecommerce on EC2
+
+![infra](ecommercedocker.png)
 
 ## Project Overview
 
@@ -8,108 +10,60 @@ This project is a Django-based ecommerce application with a React frontend, depl
 
 The project uses Terraform to provision AWS resources:
 
-- 1 VPC
+Development VPC Infrastructure:
+
+- 1 VPC (10.0.0.0/16)
 - 2 Availability Zones
-- 3 Subnets (1 public, 2 private)
-- 3 EC2 instances (frontend in public subnet, backend in private subnet, RDS instance)
-- 2 Route Tables
+- 4 Subnets:
+ - 2 Public (10.0.1.0/24, 10.0.2.0/24)
+ - 2 Private (10.0.10.0/24, 10.0.11.0/24)
+- 2 Route Tables:
+ - Public (routes through Internet Gateway)
+ - Private (routes through NAT Gateway)
 - Internet Gateway
-- NAT Gateway
-- Elastic IP
-- Security Groups for each subnet
-- 1 RDS instance
+- NAT Gateway in public subnet
+- Elastic IP for NAT Gateway
+- 2 EC2 instances:
+ - App EC2 in private subnet (running frontend/backend containers)
+ - Bastion host in public subnet
+- 1 RDS PostgreSQL instance in private subnet
+- 1 Application Load Balancer in public subnets
+
+Security Groups:
+- ALB: Port 80 inbound from anywhere
+- EC2: Ports 22, 3000, 8000 inbound
+- RDS: Port 5432 inbound from EC2 SG and Jenkins IP
+- Bastion: Port 22 inbound from anywhere
+- All SGs allow all outbound traffic
 
 For detailed Terraform configuration, see the [main.tf](./terraform/main.tf) file.
 
-## Backend Setup (Django)
+## Jenkins pipeline:
 
-1. Install Python 3.9 using deadsnakes PPA:
-   ```
-   sudo add-apt-repository ppa:deadsnakes/ppa
-   sudo apt update
-   sudo apt install python3.9 python3.9-venv python3.9-dev
-   ```
+- The pipeline builds the [Dockerfile.backend](Dockerfile.backend) and [Dockerfile.frontend](Dockerfile.frontend). 
+- The VPC is created.
+ - The EC2 for that hosts the containers has [user data](./terraform/deploy.sh) that runs the [compose.yaml](./terraform/compose.yaml)
+ - **POSSIBLE BUG**
+    - If the user data doesn't run for some reason you'll have to use the bastion server to ssh into the ecommerce-app ec2 and run the user data manually
+      ```
+         sudo bash /var/lib/cloud/instance/user-data.txt
+      ``` 
 
-2. Create and activate a Python 3.9 virtual environment:
-   ```
-   python3.9 -m venv env
-   source env/bin/activate
-   ```
+Create a Jenkins infrastructure with a manager and a node.
 
-3. Install project dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+Node
+   - name should be 'build-node' to correspond with name in Jenkinsfile
+   - T3.medium, 20gb disk space
+     
+   - **Dependencies for Node**
+      - docker.io
+      - docker-compose
+      - terraform
 
-4. Modify `settings.py`:
-   - Update `ALLOWED_HOSTS` to include EC2 private IP
-   - Update `default` database with postgres RDS details
+Jenkins Credentials use by the pipepiline
+   - Github token for repo. Save as password and username
+   - Docker token for dockerbub account. Save as password and username. ID of credentials should be 'docker-hub-credentials' to correspond with name on Jenkinsfile
 
-   See [settings.py](./backend/my_project/settings.py) for details.
-
-5. Load data to Postgres RDS 
-   - Create tables in RDS
-   ```
-   python manage.py makemigrations account
-   python manage.py makemigrations payments
-   python manage.py makemigrations product
-   python manage.py migrate
-   ```
-   - Migrate data from sqlite file to RDS
-   ```
-   python manage.py dumpdata --database=sqlite --natural-foreign --natural-primary -e contenttypes -e auth.Permission --indent 4 > datadump.json
-
-   python manage.py loaddata datadump.json
-   ```
-
-   See [settings.py](./backend/my_project/settings.py) for details.
-
-6. Run Django server:
-   ```
-   python manage.py runserver 0.0.0.0:8000
-   ```
-
-## Frontend Setup (React)
-
-1. Update system packages and install git:
-   ```
-   sudo apt update
-   sudo apt install -y git
-   ```
-
-2. Clone the repository:
-   ```
-   git clone https://github.com/YashMarmat/FullStack_Ecommerce_App.git
-   ```
-
-3. Install Node.js and npm:
-   ```
-   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-   sudo apt install -y nodejs
-   ```
-
-4. Navigate to the frontend directory:
-   ```
-   cd FullStack_Ecommerce_App/frontend
-   ```
-
-5. Update `package.json`:
-   - Modify the "proxy" field to point to the backend EC2 private IP:
-     ```json
-     "proxy": "http://BACKEND_PRIVATE_IP:8000"
-     ```
-
-   See [package.json](./frontend/package.json) for details.
-
-6. Install dependencies:
-   ```
-   npm i
-   ```
-
-7. Set Node.js options for legacy compatibility and start the app:
-   ```
-   export NODE_OPTIONS=--openssl-legacy-provider
-   npm start
-   ```
-
-
+### Changes in Jenkinsfile
+   - Replace name of the tag of the container to line up with the name of your repo (line 29 and line 39)
+   - Replace the repository in the push command (line 33 and like 42)
