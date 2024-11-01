@@ -53,6 +53,7 @@ For detailed Terraform configuration, see the [main.tf](./terraform/main.tf) fil
       ``` 
 
 **Create a Jenkins infrastructure with a manager and a node.**
+
 Node
    - name should be 'build-node' to correspond with name in Jenkinsfile
    - T3.medium, 20gb disk space
