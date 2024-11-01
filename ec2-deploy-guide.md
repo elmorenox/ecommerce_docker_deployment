@@ -1,6 +1,6 @@
 #  Dockerized Django Ecommerce on EC2
 
-![infra](ecommercedocker.png)
+![infra](ecomerecedocker.png)
 
 ## Project Overview
 
