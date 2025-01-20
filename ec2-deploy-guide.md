@@ -56,6 +56,7 @@ For detailed Terraform configuration, see the [main.tf](./terraform/main.tf) fil
 
 **Node**
    - name should be 'build-node' to correspond with name in Jenkinsfile
+   - root directory on node should be /home/ubuntu/jenkins
    - T3.medium, 20gb disk space
      
    - **Dependencies for Node**
