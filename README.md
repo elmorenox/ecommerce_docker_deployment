@@ -1,200 +1,97 @@
-# FullStack_Ecommerce_App
-A FullStack Ecommerce App built with Django and React. 
-<p id ="top" align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20products%20list%20page.png?raw=true" width="100%">
-</p>
+# Dockerized E-commerce Application with Jenkins CI/CD
 
-Checkout the site in action here <a href="https://condescending-goldstine-79a4ed.netlify.app/">Deployed App</a> (short note below)
+## PURPOSE
+This project implements a complete CI/CD pipeline for a Django and React-based e-commerce application using Jenkins, with automated infrastructure provisioning through Terraform. The system automates the build, test, and deployment processes while maintaining security best practices through proper network segregation and access controls.
 
-(Note: The website can take upto 30 seconds (hosted on Heroku free tier services), as the project has no clients, its just for learning, please refer the source
-code to run locally).
+## STEPS
 
-# Table of contents
-- [About_this_App](#About_this_App)
-- [App_Overview](#App_Overview)
-  * [Products_List_Page](#Products_List_Page)
-  * [Product_Details_Page](#Product_Details_Page)
-  * [Product_Edit_Page](#Product_Edit_Page)
-  * [Add_Product_Page](#Add_Product_Page)
-  * [Checkout_Page](#Checkout_Page)
-  * [Payment_Confirmation_Page](#Payment_Confirmation_Page)
-  * [Payment_successfull_Page](#Payment_successfull_Page)
-  * [Orders_Page_For_User](#Orders_Page_For_User)
-  * [Orders_Page_For_Admin](#Orders_Page_For_Admin)
-  * [Address_Settings_Page](#Address_Settings_Page)
-  * [Address_Create_Page](#Address_Create_Page)
-  * [Address_Edit_Page](#Address_Edit_Page)
-  * [Card_Settings_Page](#Card_Settings_Page)
-  * [Card_Update_Page](#Card_Update_Page)
-  * [Login_Page](#Login_Page)
-  * [Register_Page](#Register_Page)
-  * [User_Account_Page](#User_Account_Page)
-  * [Update_User_Account_Page](#Update_User_Account_Page)
-  * [Delete_User_Account_Page](#Delete_User_Account_Page)
-  * [Other_Functionalities](#Other_Functionalities)
-- [Installation](#Installation)
-  * [Backend](#backend)
-  * [Frontend](#frontend)
+### 1. Jenkins Infrastructure Setup
+- Created a Jenkins controller-node architecture for distributed builds
+- Automated Jenkins configuration using Configuration as Code (JCasC)
+- Configured necessary plugins and credentials for GitHub, DockerHub, and AWS
+- Set up build node with required dependencies (Docker, Terraform)
 
-## About_this_App
-An Ecommerce app where users can purchase products by using their stripe card.  Users are allowed to visit our website and free to look any product details. User needs to create an account on our website to proceed with the payment section. If a user want they can also delete their account anytime (NOTE: With the deletion of a user account all their info like Account details, Address details, Card details will be deleted as well)
+### 2. CI/CD Pipeline Implementation
+- Implemented multibranch pipeline to handle PR merges
+- Configured Docker image building for both frontend and backend
+- Automated infrastructure provisioning using Terraform
+- Set up secure credential management in Jenkins
 
-The website also provides the flexibility to create a new stripe card if they do not have one, the user can also pay with other user stripe card (if they provide the right email address linked with the card and other card details like Card Number, Exp Month, Exp Year and CVC). The user can also detete their stripe card if they like (Caution: With the deletion of their stripe card their account related to that card will also be deleted as well). 
+### 3. Infrastructure Provisioning
+- Created VPC with public/private subnet architecture
+- Implemented security groups for proper access control
+- Set up RDS instance in private subnet for database
+- Configured load balancer for high availability
 
-## App_Overview
-### Products_List_Page
-This page displays all the available products on the website.
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20products%20list%20page.png?raw=true" width="100%">
-</p>
+### 4. Security Implementation
+- Bastion host for secure access to private instances
+- NAT Gateway for private subnet internet access
+- Proper security group configurations
+- Secure credential management through Jenkins
 
-### Product_Details_Page
-This page displays the details of the Product which user has selected from the products list page. Here, the user can see all the info of the Product such as product name, description, in stock or out of stock and pay with stripe button. For Admins, the website provides two more functionalities such as Updating the product and secondly deleting the product.
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20product%20details%20page.png?raw=true" width="100%">
-</p>
+## SYSTEM DESIGN
 
-### Product_Edit_Page
-Only admins can visit this page, the page handles the editing of the Product in terms of image, name , description, price and in stock status. 
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20product%20edit%20page.png?raw=true" width="100%">
-</p>
+[System design is shown in the Diagram.jpg included in repository]
 
-### Add_Product_Page
-Only admins can visit this page, the pages handles the creation of product (requires product name,  image, description, price and in stock status.
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20add%20product%20page.png?raw=true" width="100%">
-</p>
+Key Components:
+1. Jenkins Infrastructure:
+   - Controller in public subnet (port 8080)
+   - Build node in private subnet
+   - Automated configuration using JCasC
 
-### Checkout_Page
-This page displays the info of the product which user has selected for the purchase. The page Contains the product information and provides pay with stripe card
-option. The user can also save their card for future payments. The user can also select or edit their address from the page.
+2. Application Infrastructure:
+   - Frontend/Backend containers in private subnet
+   - RDS in private subnet
+   - ALB in public subnet
+   - Bastion host for secure access
 
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20checkout%20page.png?raw=true" width="100%">
-</p>
+## ISSUES/TROUBLESHOOTING
 
-### Payment_Confirmation_Page
-The page displays total amount info, the address selected by the user for delivery and the card number used for the purchase. The user can also select a different card and
-address from the same page if something wents wrong.
+1. Jenkins Node Connection
+   - Issue: Jenkins node needs proper directory setup
+   - Solution: Created /home/ubuntu/jenkins directory with correct permissions
 
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20payment%20confirmation%20page.png?raw=true" width="100%">
-</p>
+2. Docker Permissions
+   - Issue: Jenkins user needs docker access
+   - Solution: Added jenkins user to docker group and configured sudo access
 
-### Payment_Successfull_Page
-The Page displays the confirmation of the product purchase. Also, provides info like which product is bought and how much amount was paid for it. Go to orders page is
-also provided to see the order details.
+3. Terraform State Management
+   - Issue: Concurrent pipeline runs can conflict
+   - Solution: Implemented state locking with S3 backend
 
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20payment%20successfull%20page.png?raw=true" width="100%">
-</p>
+4. User Data Execution
+   - Issue: Occasional failure of user data script
+   - Solution: Added manual execution instructions via bastion host
 
-### Orders_Page_For_User
-The page displays the list of all the orders made by user, with the details like their name, card number used, date of purchase, address etc.
+## OPTIMIZATION
 
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20orders%20page%20for%20normal%20user.png?raw=true" width="100%">
-</p>
+1. Infrastructure Improvements:
+   - Implement auto-scaling for application EC2 instances
+   - Add CloudWatch monitoring and alerting
+   - Implement ECS/EKS for better container orchestration
 
-### Orders_Page_For_Admin
-For admin user the page display the list of all users order information. The admin can change the status of product delivery status as well. A search bar is also
-provided to locate the orders with more flexibility (can search the orders by customer name, address and product name)
+2. Pipeline Enhancements:
+   - Add automated testing stages
+   - Implement blue-green deployments
+   - Add artifact caching for faster builds
 
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20orders%20page%20for%20admin.png?raw=true" width="100%">
-</p>
+3. Security Enhancements:
+   - Implement AWS WAF for ALB
+   - Add VPC flow logs for network monitoring
+   - Implement HashiCorp Vault for secret management
 
-### Address_Settings_Page
-Here, the user can view their addresses, the page also provides creation of new address and can edit or delete it as well.
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20address%20settings%20page.png?raw=true" width="100%">
-</p>
+4. Cost Optimization:
+   - Use spot instances for build nodes
+   - Implement auto-shutdown for dev environments
+   - Optimize RDS instance sizing
 
-### Address_Create_Page
-Here, the user can create their new address.
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20address%20create%20page.png?raw=true" width="50%">
-</p>
+## CONCLUSION
+This project demonstrates a complete CI/CD pipeline for a containerized application with infrastructure as code. The implementation prioritizes security, automation, and maintainability while providing a scalable foundation for future enhancements. The use of Jenkins Configuration as Code and Terraform enables repeatable, version-controlled infrastructure deployment.
 
-### Address_Edit_Page
-Here, the user can edit their address.
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20address%20update%20page.png?raw=true" width="50%">
-</p>
+Key achievements:
+- Fully automated deployment pipeline
+- Secure infrastructure design
+- Scalable architecture
+- Maintainable configuration as code
 
-### Card_Settings_Page
-Here, the user can view all their card details. The Page also provides updation and deletion of Card.
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20card%20settings%20page.png?raw=true" width="100%">
-</p>
-
-
-### Card_Update_Page
-Here, the user can update their card.
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20card%20update%20page.png?raw=true" width="50%">
-</p>
-
-### Login_Page
-Requires an Account on the Website
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20sign%20in%20page.png?raw=true" width="100%">
-</p>
-
-### Register_Page
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20sign%20up%20page.png?raw=true" width="100%">
-</p>
-
-### User_Account_Page
-Here, the user can see their details like their Name, Email and Admin Priviledges.
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20user%20account%20page.png?raw=true" width="100%">
-</p>
-
-### Update_User_Account_Page
-Here, the user can update their account details like username, email and can also reset their password.
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20account%20update%20page.png?raw=true" width="100%">
-</p>
-
-### Delete_User_Account_Page
-Here, the user can Delete their account (requires password confirmation)
-<p align="center">
-  <img src="https://github.com/YashMarmat/Pages-App-django/blob/master/templates/ecommerce%20%20delete%20account%20page.png?raw=true" width="100%">
-</p>
-
-### Other_Functionalities
-- Used JSON web tokens to achieve the authentication checks in the website.
-- Strict Security Checking behind the scenes during the Card Creation and Payment Process.
-- JSON Token gets checked for every single request made on the website (except products list and product details page)
-
-## Installation
-after downloading/cloning the repository code follow below steps:
-* (NOTE: your need to mention your own stripe secret api key and publishable key in django to run the project)
-
-### Backend
-* (for both linux and windows)
-1) Move in backend folder through terminal and run following commands,
-
-`python3 -m venv env` (for windows --> `python -m venv env`) 
-
-`source env/bin/activate` (for windows --> `env\scripts\activate`)
-
-`pip install -r requirements.txt` (same for both)
-
-`python manage.py runserver` (same for both)
-
-### Frontend
-* (for both linux and windows)
-2) Move in frontend folder through terminal and run follwing commands
-
-`npm i`
-
-`npm start`
-
-## All set ! Happy coding :)
-
-<p><a href="#top">Back to Top</a></p>
-
+Future work should focus on implementing the suggested optimizations to enhance security, performance, and cost-effectiveness of the system.
