@@ -1,4 +1,5 @@
 .gitignore
+Diagram.jpg
 Dockerfile.backend
 Dockerfile.frontend
 Jenkinsfile
@@ -59,7 +60,6 @@ backend/static/images/pencils.jpg
 backend/static/images/react_image.png
 backend/static/images/welcome_page.jpg
 ec2-deploy-guide.md
-ecomerecedocker.png
 frontend/README.md
 frontend/package-lock.json
 frontend/package.json
@@ -109,6 +109,7 @@ frontend/src/reducers/index.js
 frontend/src/reducers/productReducers.js
 frontend/src/reducers/userReducers.js
 frontend/src/store.js
+ls-files.txt
 terraform/compose.yaml
 terraform/deploy.sh
 terraform/main.tf
