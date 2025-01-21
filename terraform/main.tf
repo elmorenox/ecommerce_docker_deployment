@@ -168,6 +168,7 @@ resource "aws_security_group" "ec2" {
 resource "aws_security_group" "monitoring" {
   name        = "ecommerce-monitoring-sg"
   description = "Security group for monitoring instance"
+  vpc_id      = aws_vpc.main.id  # Add VPC ID
 
   ingress {
     from_port   = 9090
@@ -196,7 +197,12 @@ resource "aws_security_group" "monitoring" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "ecommerce-monitoring-sg"
+  }
 }
+
 
 # RDS subnet group
 resource "aws_db_subnet_group" "main" {
@@ -212,6 +218,7 @@ resource "aws_db_subnet_group" "main" {
 resource "aws_instance" "monitoring" {
   ami           = "ami-0c7217cdde317cfec"
   instance_type = "t3.micro"
+  subnet_id     = aws_subnet.public[0].id
   key_name      = var.key_name
 
   vpc_security_group_ids = [aws_security_group.monitoring.id]
@@ -224,6 +231,7 @@ resource "aws_instance" "monitoring" {
     Name = "ecommerce-monitoring"
   }
 }
+
 # RDS instance
 resource "aws_db_instance" "main" {
   identifier           = "ecommerce-db"
