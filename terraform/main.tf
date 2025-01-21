@@ -216,13 +216,14 @@ resource "aws_instance" "monitoring" {
 
   vpc_security_group_ids = [aws_security_group.monitoring.id]
 
-  user_data = base64encode(templatefile("${path.module}/monitoring-setup.sh", {}))
+  user_data = base64encode(templatefile("${path.module}/monitoring-setup.sh", {
+    app_private_ip = aws_instance.app.private_ip
+  }))
 
   tags = {
     Name = "ecommerce-monitoring"
   }
 }
-
 # RDS instance
 resource "aws_db_instance" "main" {
   identifier           = "ecommerce-db"

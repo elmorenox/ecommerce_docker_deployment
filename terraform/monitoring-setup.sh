@@ -16,7 +16,7 @@ global:
 scrape_configs:
   - job_name: 'node'
     static_configs:
-      - targets: ['${aws_instance.app.private_ip}:9100']
+      - targets: ['${app_private_ip}:9100']
 EOF
 
 # Create docker-compose.yml for monitoring
