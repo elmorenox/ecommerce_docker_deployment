@@ -165,6 +165,39 @@ resource "aws_security_group" "ec2" {
   }
 }
 
+resource "aws_security_group" "monitoring" {
+  name        = "ecommerce-monitoring-sg"
+  description = "Security group for monitoring instance"
+
+  ingress {
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Prometheus UI
+  }
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Grafana UI
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # SSH
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 # RDS subnet group
 resource "aws_db_subnet_group" "main" {
   name       = "ecommerce-db-subnet"
@@ -172,6 +205,21 @@ resource "aws_db_subnet_group" "main" {
 
   tags = {
     Name = "ecommerce-db-subnet-group"
+  }
+}
+
+#monitoring ec2
+resource "aws_instance" "monitoring" {
+  ami           = "ami-0c7217cdde317cfec"
+  instance_type = "t3.micro"
+  key_name      = var.key_name
+
+  vpc_security_group_ids = [aws_security_group.monitoring.id]
+
+  user_data = base64encode(templatefile("${path.module}/monitoring-setup.sh", {}))
+
+  tags = {
+    Name = "ecommerce-monitoring"
   }
 }
 
