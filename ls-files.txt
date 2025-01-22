@@ -109,15 +109,12 @@ frontend/src/reducers/index.js
 frontend/src/reducers/productReducers.js
 frontend/src/reducers/userReducers.js
 frontend/src/store.js
-jenkins-terraform/instances.tf
-jenkins-terraform/outputs.tf
-jenkins-terraform/provider.tf
+jenkins-terraform/main.tf
 jenkins-terraform/scripts/controller-userdata.sh
 jenkins-terraform/scripts/node-userdata.sh
-jenkins-terraform/security.tf
 jenkins-terraform/variables.tf
-jenkins-terraform/vpc.tf
 ls-files.txt
+schema.txt
 terraform/compose.yaml
 terraform/deploy.sh
 terraform/main.tf
