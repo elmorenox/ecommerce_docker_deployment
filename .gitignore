@@ -57,3 +57,6 @@ yarn-error.log*
 # Sensitive or environment-specific files
 *.pem
 .env
+
+id_rsa_jenkins*
+*.pub
