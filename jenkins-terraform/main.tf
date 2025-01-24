@@ -2,12 +2,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Variables
-variable "key_name" {
-  description = "Name of the SSH key pair"
-  type        = string
-}
-
 # VPC Resources
 resource "aws_vpc" "jenkins_vpc" {
   cidr_block           = "10.0.0.0/16"
