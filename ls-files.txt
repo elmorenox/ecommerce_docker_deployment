@@ -4,6 +4,7 @@ Dockerfile.backend
 Dockerfile.frontend
 Jenkinsfile
 README.md
+application-resouces.json
 backend/.gitignore
 backend/account/__init__.py
 backend/account/admin.py
@@ -60,6 +61,7 @@ backend/static/images/pencils.jpg
 backend/static/images/react_image.png
 backend/static/images/welcome_page.jpg
 ec2-deploy-guide.md
+environment-resources.json
 frontend/README.md
 frontend/package-lock.json
 frontend/package.json
@@ -109,6 +111,7 @@ frontend/src/reducers/index.js
 frontend/src/reducers/productReducers.js
 frontend/src/reducers/userReducers.js
 frontend/src/store.js
+jenkins-response.html
 jenkins-terraform/main.tf
 jenkins-terraform/scripts/controller-userdata.sh
 jenkins-terraform/scripts/node-userdata.sh
