@@ -60,6 +60,7 @@ backend/static/images/no_preview_image.png
 backend/static/images/pencils.jpg
 backend/static/images/react_image.png
 backend/static/images/welcome_page.jpg
+cloud-resources-schema.md
 ec2-deploy-guide.md
 environment-resources.json
 frontend/README.md
