@@ -53,6 +53,7 @@
               {
                 "Type": "Database",
                 "Subtype": "RDS",
+                "Engine": "Postgres",
                 "Count": 1
               }
             ]
