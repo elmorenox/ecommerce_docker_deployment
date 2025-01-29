@@ -5,18 +5,6 @@
       "Count": 2
     },
     {
-      "Type": "Compute",
-      "Subtype": "EC2",
-      "InstanceType": "t2.micro",
-      "Count": 1
-    },
-    {
-      "Type": "Compute",
-      "Subtype": "EC2",
-      "InstanceType": "t2.medium",
-      "Count": 1
-    },
-    {
       "Type": "AvailabilityZone",
       "Count": 2
     },
@@ -33,14 +21,20 @@
     {
       "Type": "Compute",
       "Subtype": "EC2",
-      "Count": 3,
-      "InstanceType": "t2.micro"
+      "InstanceType": "t2.micro",
+      "Count": 4
     },
     {
       "Type": "Compute",
       "Subtype": "EC2",
-      "Count": 1,
-      "InstanceType": "t3.micro"
+      "InstanceType": "t2.medium",
+      "Count": 1
+    },
+    {
+      "Type": "Compute",
+      "Subtype": "EC2",
+      "InstanceType": "t3.micro",
+      "Count": 1
     },
     {
       "Type": "Database",
