@@ -28,7 +28,7 @@
       "Type": "Compute",
       "Subtype": "EC2",
       "Count": 1,
-      "InstanceType": "t3.micro"
+      "InstanceType": "t2.medium"
     },
     {
       "Type": "Database",
