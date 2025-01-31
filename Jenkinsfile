@@ -21,6 +21,16 @@ pipeline {
             }
         }
 
+        stage('Tests') {
+            steps {
+                sh '''
+                    cd backend
+                    python3 -m pip install -r requirements.txt
+                    python3 manage.py test product.tests
+                '''
+            }
+        }
+
         stage('Build & Push Images') {
             steps {
                 sh 'echo $DOCKER_CREDS_PSW | sudo docker login -u $DOCKER_CREDS_USR --password-stdin'
