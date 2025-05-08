@@ -90,6 +90,24 @@ resource "aws_security_group" "jenkins_sg" {
 }
 
 # EC2 Instances
+resource "aws_instance" "jenkins_node" {
+  ami           = "ami-0c7217cdde317cfec"  # Ubuntu 22.04 LTS AMI ID for us-east-1
+  instance_type = "t2.medium"
+  key_name      = var.key_name
+  subnet_id     = aws_subnet.jenkins_subnet.id
+  
+  # Set a static private IP address within the subnet's range
+  private_ip    = "10.0.1.10"  # Changed from 10.0.1.10 to be within the subnet range
+
+  vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
+
+  user_data = file("scripts/node-userdata.sh")
+
+  tags = {
+    Name = "Jenkins-Node"
+  }
+}
+
 resource "aws_instance" "jenkins_controller" {
   ami           = "ami-0c7217cdde317cfec"  # Ubuntu 22.04 LTS AMI ID for us-east-1
   instance_type = "t2.micro"
@@ -98,25 +116,19 @@ resource "aws_instance" "jenkins_controller" {
 
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
 
-  user_data = file("scripts/controller-userdata.sh")
+  # Use templatefile instead of file to inject variables into the user data script
+  user_data = templatefile("${path.module}/scripts/controller-userdata.sh", {
+    ssh_private_key     = file(var.ssh_private_key_file),
+    docker_hub_username = var.docker_hub_username,
+    docker_hub_password = var.docker_hub_password,
+    jenkins_node_ip     = "10.0.1.10"
+    codon_pubkey        = var.codon_pubkey
+  })
+
+
 
   tags = {
-    Name = "jenkins-controller"
-  }
-}
-
-resource "aws_instance" "jenkins_node" {
-  ami           = "ami-0c7217cdde317cfec"  # Ubuntu 22.04 LTS AMI ID for us-east-1
-  instance_type = "t2.medium"
-  key_name      = var.key_name
-  subnet_id     = aws_subnet.jenkins_subnet.id
-
-  vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
-
-  user_data = file("scripts/node-userdata.sh")
-
-  tags = {
-    Name = "jenkins-node"
+    Name = "Jenkins"
   }
 }
 
