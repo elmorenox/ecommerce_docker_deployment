@@ -374,10 +374,15 @@ resource "aws_security_group" "bastion" {
 # Bastion Host EC2 Instance
 resource "aws_instance" "bastion" {
   ami                    = "ami-0c7217cdde317cfec"
-  instance_type         = "t2.micro"
-  subnet_id             = aws_subnet.public[0].id
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.public[0].id
   vpc_security_group_ids = [aws_security_group.bastion.id]
-  key_name              = var.key_name  # Ensure you have access to this key
+  key_name               = var.key_name
+
+  # Add user data to set up SSH private key
+  user_data = templatefile("${path.module}/scripts/bastion.sh", {
+    ssh_private_key = file("/home/ubuntu/.ssh/id_rsa")
+  })
 
   tags = {
     Name = "ecommerce-bastion"

@@ -121,17 +121,16 @@ resource "aws_instance" "jenkins_controller" {
     ssh_private_key     = file(var.ssh_private_key_file),
     docker_hub_username = var.docker_hub_username,
     docker_hub_password = var.docker_hub_password,
-    jenkins_node_ip     = "10.0.1.10"
-    codon_pubkey        = var.codon_pubkey
+    jenkins_node_ip     = aws_instance.jenkins_node.private_ip,
+    codon_pubkey        = file(var.codon_pubkey)  # Read the file content, not just the path
   })
 
-
+  depends_on = [aws_instance.jenkins_node]
 
   tags = {
     Name = "Jenkins"
   }
 }
-
 # Outputs
 output "controller_public_ip" {
   value = aws_instance.jenkins_controller.public_ip

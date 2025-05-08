@@ -20,3 +20,15 @@ wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list
 apt update
 apt install -y terraform
+
+mkdir -p /home/ubuntu/.ssh
+chmod 700 /home/ubuntu/.ssh
+
+cat > /home/ubuntu/.ssh/id_rsa << 'EOL'
+${ssh_private_key}
+EOL
+
+# Set proper permissions
+chmod 700 /home/ubuntu/.ssh
+chmod 600 /home/ubuntu/.ssh/id_rsa
+chown -R ubuntu:ubuntu /home/ubuntu/.ssh
