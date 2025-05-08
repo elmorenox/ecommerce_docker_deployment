@@ -20,7 +20,7 @@ variable "db_password" {
 variable "key_name" {
   description = "Name of the EC2 key pair"
   type        = string
-  default = "LuisMorenoWorkloads"
+  default = "Workloads"
 }
 
 variable "dockerhub_username" {
