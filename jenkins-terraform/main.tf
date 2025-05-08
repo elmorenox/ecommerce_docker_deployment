@@ -101,7 +101,9 @@ resource "aws_instance" "jenkins_node" {
 
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
 
-  user_data = file("scripts/node-userdata.sh")
+  user_data = templatefile("${path.module}/scripts/node-userdata.sh", {
+    ssh_private_key     = file(var.ssh_private_key_file)
+  })
 
   tags = {
     Name = "Jenkins-Node"

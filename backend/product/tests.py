@@ -9,6 +9,7 @@ from rest_framework.test import APIRequestFactory
 from .views import ProductCreateView, ProductDeleteView, ProductEditView
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
+import os  # Add os import
 
 
 class ProductApiTest(TestCase):
@@ -102,7 +103,9 @@ class ProductApisAuthTest(ProductApisSetUp):
         user = User.objects.get(username='testuser') # not an admin
         view = ProductCreateView.as_view()
 
-        image = SimpleUploadedFile("computer_chair.jpg", content=open("static\images\computer_chair.jpg", 'rb').read(), content_type='image/jpeg')
+        # Use os.path.join for platform-independent path handling
+        image_path = os.path.join('static', 'images', 'computer_chair.jpg')
+        image = SimpleUploadedFile("computer_chair.jpg", content=open(image_path, 'rb').read(), content_type='image/jpeg')
 
         new_product = {
             "name": "smart phone",
@@ -124,7 +127,9 @@ class ProductApisAuthTest(ProductApisSetUp):
         user = User.objects.get(username='admin') # admin user
         view = ProductCreateView.as_view()
 
-        image = SimpleUploadedFile("computer_chair.jpg", content=open("static\images\computer_chair.jpg", 'rb').read(), content_type='image/jpeg')
+        # Use os.path.join for platform-independent path handling
+        image_path = os.path.join('static', 'images', 'computer_chair.jpg')
+        image = SimpleUploadedFile("computer_chair.jpg", content=open(image_path, 'rb').read(), content_type='image/jpeg')
 
         new_product = {
             "name": "smart phone",
@@ -201,4 +206,3 @@ class ProductApisAuthTest(ProductApisSetUp):
         force_authenticate(request, user=user)
         response = view(request, 1)
         self.assertEqual(response.status_code, 403) # Forbidden
-
