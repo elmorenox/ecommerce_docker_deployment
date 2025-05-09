@@ -26,3 +26,13 @@ variable "codon_pubkey" {
   type        = string
   sensitive   = true
 }
+
+variable aws_access_key {
+  type        = string
+  sensitive   = sensitive
+}
+
+variable aws_secret_key {
+  type        = string
+  sensitive   = true
+}
