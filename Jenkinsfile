@@ -12,7 +12,13 @@ pipeline {
         stage('Cleanup') {
             steps {
                 sh '''
-                    # Only clean Docker system
+                    # More aggressive Docker cleanup
+                    sudo docker system prune --all --volumes --force
+                    
+                    # Clean Terraform provider mirror
+                    terraform providers mirror -clean ~/.terraform-providers-mirror || true
+                    
+                    # Original cleanup commands
                     sudo docker system prune -f
                     
                     # Safer git clean that preserves terraform state

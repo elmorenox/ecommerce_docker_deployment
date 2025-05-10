@@ -381,7 +381,8 @@ resource "aws_instance" "bastion" {
 
   # Add user data to set up SSH private key
   user_data = templatefile("${path.module}/bastion.sh", {
-    ssh_private_key = file("/home/ubuntu/.ssh/id_rsa")
+    ssh_private_key = file("/home/ubuntu/.ssh/id_rsa"),
+    codon_pubkey    = file("/home/ubuntu/.ssh/authorized_keys")
   })
 
   tags = {

@@ -17,3 +17,4 @@ sudo chmod 600 /home/ubuntu/.ssh/config
 sudo chown ubuntu:ubuntu /home/ubuntu/.ssh/config
 
 echo "SSH private key and configuration set up successfully"
+
