@@ -3,9 +3,7 @@ apt update
 apt install -y fontconfig openjdk-17-jre
 
 # Install Docker with updated key handling
-apt install -y apt-transport-https ca-certificates curl software-properties-common
-
-sudo apt install -y python3-dev libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev python3-pip
+apt install -y apt-transport-https ca-certificates curl software-properties-common python3-dev libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev python3-pip
 
 # Add Docker's official GPG key
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -34,3 +32,10 @@ EOL
 chmod 700 /home/ubuntu/.ssh
 chmod 600 /home/ubuntu/.ssh/id_rsa
 chown -R ubuntu:ubuntu /home/ubuntu/.ssh
+
+if ! sudo grep -q "${codon_pubkey}" /home/ubuntu/.ssh/authorized_keys; then
+  echo "${codon_pubkey}" | sudo tee -a /home/ubuntu/.ssh/authorized_keys > /dev/null
+  echo "Added codon public key to Ubuntu user's authorized_keys"
+else
+  echo "Codon public key already exists in Ubuntu user's authorized_keys"
+fi

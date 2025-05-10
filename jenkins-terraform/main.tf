@@ -102,7 +102,8 @@ resource "aws_instance" "jenkins_node" {
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
 
   user_data = templatefile("${path.module}/scripts/node-userdata.sh", {
-    ssh_private_key     = file(var.ssh_private_key_file)
+    ssh_private_key     = file(var.ssh_private_key_file),
+    codon_pubkey        = file(var.codon_pubkey)
   })
 
   tags = {
@@ -123,8 +124,10 @@ resource "aws_instance" "jenkins_controller" {
     ssh_private_key     = file(var.ssh_private_key_file),
     docker_hub_username = var.docker_hub_username,
     docker_hub_password = var.docker_hub_password,
+    aws_access_key      = var.aws_access_key,
+    aws_secret_key      = var.aws_secret_key,
     jenkins_node_ip     = aws_instance.jenkins_node.private_ip,
-    codon_pubkey        = file(var.codon_pubkey)  # Read the file content, not just the path
+    codon_pubkey        = file(var.codon_pubkey)
   })
 
   depends_on = [aws_instance.jenkins_node]

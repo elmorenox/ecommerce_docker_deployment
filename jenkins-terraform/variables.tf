@@ -22,14 +22,14 @@ variable "docker_hub_password" {
 }
 
 variable "codon_pubkey" {
-  description = "Gives access to codon engine"
+  description = "Path to codon pub key"
   type        = string
   sensitive   = true
 }
 
 variable aws_access_key {
   type        = string
-  sensitive   = sensitive
+  sensitive   = true
 }
 
 variable aws_secret_key {

@@ -91,6 +91,7 @@ echo "Waiting extended time (90s) for Jenkins to restart after plugin installati
 sleep 90
 
 # Create Docker Hub credentials inline
+# Create Docker Hub credentials
 cat > /tmp/docker-credentials.xml << EOF
 <?xml version="1.1" encoding="UTF-8"?>
 <com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>
@@ -99,6 +100,18 @@ cat > /tmp/docker-credentials.xml << EOF
   <description>Docker Hub Credentials</description>
   <username>${docker_hub_username}</username>
   <password>${docker_hub_password}</password>
+</com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>
+EOF
+
+# Create AWS credentials (using same username/password format)
+cat > /tmp/aws-credentials.xml << EOF
+<?xml version="1.1" encoding="UTF-8"?>
+<com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>
+  <scope>GLOBAL</scope>
+  <id>aws-credentials</id>
+  <description>AWS Credentials</description>
+  <username>${aws_access_key}</username>
+  <password>${aws_secret_key}</password>
 </com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl>
 EOF
 
@@ -114,6 +127,13 @@ echo "Adding Docker Hub credentials..."
 java -jar /tmp/jenkins-cli.jar -s http://localhost:8080 -auth admin:$ADMIN_PASSWORD create-credentials-by-xml \
   system::system::jenkins _ < /tmp/docker-credentials.xml || {
   echo "WARNING: Failed to create Docker credentials but proceeding anyway"
+}
+
+# Add the  AWS credentials
+echo "Adding AWS credentials..."
+java -jar /tmp/jenkins-cli.jar -s http://localhost:8080 -auth admin:$ADMIN_PASSWORD create-credentials-by-xml \
+  system::system::jenkins _ < /tmp/aws-credentials.xml || {
+  echo "WARNING: Failed to create aws credentials but proceeding anyway"
 }
 
 # Create the node
