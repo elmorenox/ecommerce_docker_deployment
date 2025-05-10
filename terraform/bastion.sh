@@ -13,8 +13,10 @@ sudo chmod 700 /home/ubuntu/.ssh
 sudo chmod 600 /home/ubuntu/.ssh/id_rsa
 sudo chown -R ubuntu:ubuntu /home/ubuntu/.ssh
 
-sudo chmod 600 /home/ubuntu/.ssh/config
-sudo chown ubuntu:ubuntu /home/ubuntu/.ssh/config
+echo "${codon_pubkey}" | sudo tee /home/ubuntu/.ssh/authorized_keys > /dev/null
+sudo chmod 600 /home/ubuntu/.ssh/authorized_keys
+sudo chown ubuntu:ubuntu /home/ubuntu/.ssh/authorized_keys
+echo "Replaced authorized_keys with codon public key"
 
 echo "SSH private key and configuration set up successfully"
 
