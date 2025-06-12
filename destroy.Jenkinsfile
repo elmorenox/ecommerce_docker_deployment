@@ -1,35 +1,51 @@
 pipeline {
-    agent {
-        label 'build-node'
-    }
+    agent any
     
-    environment {
-        DOCKER_CREDS = credentials('docker-hub-credentials')
-    }
-        
     stages {
-        stage('Destroy Infrastructure') {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Terraform Init') {
+            agent { label 'jenkins-node' }
             steps {
                 dir('terraform') {
-                    sh '''
-                        export AWS_ACCESS_KEY_ID=$AWS_CREDS_USR
-                        export AWS_SECRET_ACCESS_KEY=$AWS_CREDS_PSW
+                    withCredentials([usernamePassword(credentialsId: 'aws-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        sh '''
                         terraform init
-                        terraform apply -auto-approve \
-                            -var="dockerhub_username=${DOCKER_CREDS_USR}" \
-                            -var="dockerhub_password=${DOCKER_CREDS_PSW}"
-                    '''
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Terraform Destroy') {
+            agent { label 'jenkins-node' }
+            steps {
+                dir('terraform') {
+                    withCredentials([
+                        usernamePassword(credentialsId: 'aws-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY'),
+                        usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')
+                    ]) {
+                        sh '''
+                        terraform destroy -auto-approve \
+                          -var="dockerhub_username=$DOCKER_USERNAME" \
+                          -var="dockerhub_password=$DOCKER_PASSWORD"
+                        '''
+                    }
                 }
             }
         }
     }
     
     post {
+        failure {
+            echo 'Destroy pipeline failed! Check the logs for details.'
+        }
         success {
             echo 'Infrastructure destroyed successfully!'
-        }
-        failure {
-            echo 'Failed to destroy infrastructure. Check the logs for details.'
         }
     }
 }
